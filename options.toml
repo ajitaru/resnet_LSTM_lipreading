@@ -1,0 +1,47 @@
+title = "TOML Example"
+
+[general]
+usecudnn = true
+usecudnnbenchmark = true
+gpuid = 0
+loadpretrainedmodel = false
+pretrainedmodelpath = "trainedmodel.pt"
+savemodel = true
+#modelsavedir = "/media/xinshuo/Data/models/resnet_LSTM_lipreading"
+modelsavedir = "/file3/xinshuo/data/models/resnet_LSTM_lipreading"
+
+#logfile = ""
+#dataset = "/media/xinshuo/Data/Datasets/LRD/LRW/lipread_mp4"
+dataset = "/file3/xinshuo/data/datasets/LRD/LRW/lipread_mp4"
+
+num_frames = 29
+
+[input]
+batchsize = 32
+numworkers = 32
+shuffle = true
+
+[model]
+type = "temp-conv"
+#type = "LSTM"
+inputdim = 256
+hiddendim = 256
+numclasses = 500
+numlstms = 2
+
+[training]
+train = true
+startepoch = 0
+endepoch = 15
+statsfrequency = 10
+learningrate = 0.003
+momentum = 0.9
+weightdecay = 0.0003
+
+[validation]
+validate = true
+saveaccuracy = true
+
+[testing]
+test = true
+saveaccuracy = true
