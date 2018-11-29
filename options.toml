@@ -19,7 +19,6 @@ num_frames = 29
 [input]
 batchsize = 32
 numworkers = 32
-shuffle = true
 
 [model]
 type = "temp-conv"
@@ -37,6 +36,7 @@ statsfrequency = 10
 learningrate = 0.003
 momentum = 0.9
 weightdecay = 0.0003
+shuffle = true
 
 [validation]
 validate = true

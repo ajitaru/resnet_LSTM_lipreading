@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from data import LipreadingDataset
 from torch.utils.data import DataLoader
 from xinshuo_miscellaneous import print_log
+from xinshuo_io import fileparts
 
 def timedelta_string(timedelta):
     totalSeconds = int(timedelta.total_seconds())
@@ -21,19 +22,20 @@ def output_iteration(i, time, totalitems, log_file):
 
 class Trainer():
     def __init__(self, options):
-        self.trainingdataset = LipreadingDataset(options["general"]["dataset"], "train")
-        self.trainingdataloader = DataLoader(self.trainingdataset, batch_size=options["input"]["batchsize"],
-            shuffle=options["input"]["shuffle"], num_workers=options["input"]["numworkers"], drop_last=True)
-        self.usecudnn = options["general"]["usecudnn"]
         self.batchsize = options["input"]["batchsize"]
+        self.trainingdataset = LipreadingDataset(options["general"]["dataset"], "train")
+        self.trainingdataloader = DataLoader(self.trainingdataset, batch_size=self.batchsize,
+            shuffle=options["training"]["shuffle"], num_workers=options["input"]["numworkers"], drop_last=True)
+        self.usecudnn = options["general"]["usecudnn"]
         self.statsfrequency = options["training"]["statsfrequency"]
         self.gpuid = options["general"]["gpuid"]
         self.learningrate = options["training"]["learningrate"]
-        self.modelType = options["training"]["learningrate"]
+        # self.modelType = options["training"]["learningrate"]
         self.weightdecay = options["training"]["weightdecay"]
         self.momentum = options["training"]["momentum"]
         self.log_file = options["general"]["logfile"]
         self.modelsavedir = options["general"]["modelsavedir"]
+        _, self.time_str, _ = fileparts(self.modelsavedir)
         print_log('loaded training dataset with %d data' % len(self.trainingdataset), log=options["general"]["logfile"])
 
     def learningRate(self, epoch):
@@ -59,7 +61,7 @@ class Trainer():
 
             outputs = model(input)
             loss = criterion(outputs, labels.squeeze(1))
-            print_log('loss is {}'.format(loss.item()), log=self.log_file)
+            print_log('Training: {}, Epoch: {}, loss is {}'.format(self.time_str, epoch, loss.item()), log=self.log_file)
             loss.backward()
             optimizer.step()
             sampleNumber = i_batch * self.batchsize
