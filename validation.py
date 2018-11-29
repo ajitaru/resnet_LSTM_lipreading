@@ -19,6 +19,7 @@ class Validator():
         self.gpuid = options["general"]["gpuid"]
         self.log_file = options["general"]["logfile"]
         self.savedir = options["general"]["modelsavedir"]
+        self.num_batches = int(len(self.validationdataset) / self.batchsize)
         print_log('loaded validation dataset with %d data' % len(self.validationdataset), log=self.log_file)
 
     def epoch(self, model, epoch):
@@ -35,7 +36,7 @@ class Validator():
 
                 outputs = model(input)
                 count += validator_function(outputs, labels)
-                print_log(count, log=self.log_file)
+                print_log('Evaluation, batch %d/%d: %d' % (i_batch+1, self.num_batches, count), log=self.log_file)
 
         accuracy = count / len(self.validationdataset)
         accu_savepath = os.path.join(self.savedir, 'accuracy_epoch%03d.txt' % epoch)

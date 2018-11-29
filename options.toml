@@ -39,7 +39,7 @@ weightdecay = 0.0003
 shuffle = true
 
 [validation]
-validate = true
+validate = false
 saveaccuracy = true
 
 [testing]
