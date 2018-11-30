@@ -46,7 +46,7 @@ class Validator():
                     prediction_tmp = self.validationdataset.label_list[predict_index_list[batch_index]]
                     print_log('Evaluation: val set, batch index %d/%d, filename: %s, prediction: %s' % (batch_index+1, self.batchsize, filename_tmp, prediction_tmp), log=self.log_file)
 
-                print_log('Evaluation: val set, batch %d/%d: %d' % (i_batch+1, self.num_batches, count), log=self.log_file)
+                print_log('Evaluation: val set, batch %d/%d, correct so far %d/%d' % (i_batch+1, self.num_batches, count, self.batchsize*(i_batch+1)), log=self.log_file)
 
         accuracy = count / len(self.validationdataset)
         accu_savepath = os.path.join(self.savedir, 'accuracy_epoch%03d.txt' % epoch)
