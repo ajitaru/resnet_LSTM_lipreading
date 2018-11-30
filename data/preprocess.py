@@ -1,10 +1,13 @@
 # Author: Xinshuo
 # Email: xinshuow@cs.cmu.edu
 
-import imageio; imageio.plugins.ffmpeg.download()
-import torchvision.transforms.functional as functional, torchvision.transforms as transforms, torch
+import imageio
+# imageio.plugins.ffmpeg.download()
+import torchvision.transforms.functional as functional, torchvision.transforms as transforms, torch, cv2
 from .statefultransforms import StatefulRandomCrop, StatefulRandomHorizontalFlip
 from xinshuo_visualization import save_image
+from xinshuo_images import image_bgr2rgb
+from xinshuo_miscellaneous import is_path_exists
 
 crop_size = 112
 num_frames = 29
@@ -24,8 +27,33 @@ def load_video(filename):
     frames = []
     for i in range(0, num_frames):
         image = vid.get_data(i)
+        print(image.dtype)
+        print(image.shape)
         image = functional.to_tensor(image)
         frames.append(image)
+    return frames
+
+
+def load_video_opencv(filename, debug=True):
+    '''
+    if the VideoCapture does not work, uninstall python-opencv and reinstall the newest version
+    '''
+    if debug: assert is_path_exists(filename), 'the input video file does not exist'
+    cap = cv2.VideoCapture(filename)
+    frame_id = 0
+    frames = []
+
+    while True:
+        ret, image = cap.read()
+        if not ret: break
+
+        image = image_bgr2rgb(image)
+        image = functional.to_tensor(image)
+        frames.append(image)
+        frame_id += 1
+        if frame_id == num_frames: break
+
+    # frames = np.array(frames)
     return frames
 
 def bbc(vidframes, augmentation=False):

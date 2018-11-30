@@ -5,7 +5,7 @@ usecudnn = true
 usecudnnbenchmark = true
 gpuid = 0
 loadpretrainedmodel = true
-pretrainedmodelpath = "/file3/xinshuo/data/models/resnet_LSTM_lipreading/trained_model_20181129_05h51m12s/trained_model_epoch001.pt"
+pretrainedmodelpath = "/file3/xinshuo/data/models/resnet_LSTM_lipreading/trained_model_20181129_05h51m12s/trained_model_epoch003.pt"
 savemodel = true
 #modelsavedir = "/media/xinshuo/Data/models/resnet_LSTM_lipreading"
 modelsavedir = "/file3/xinshuo/data/models/resnet_LSTM_lipreading"
@@ -17,10 +17,10 @@ dataset = "/file3/xinshuo/data/datasets/LRD/LRW/lipread_mp4"
 num_frames = 29
 
 [input]
-#batchsize = 32
-batchsize = 2
-#numworkers = 32
-numworkers = 2
+batchsize = 32
+#batchsize = 2
+numworkers = 32
+#numworkers = 2
 
 [model]
 #type = "temp-conv"
@@ -31,8 +31,8 @@ numclasses = 500
 numlstms = 2
 
 [training]
-train = false
-startepoch = 0
+train = true
+startepoch = 4
 endepoch = 15
 statsfrequency = 10
 learningrate = 0.003
@@ -41,7 +41,7 @@ weightdecay = 0.0003
 shuffle = true
 
 [validation]
-validate = true
+validate = false
 saveaccuracy = true
 
 [testing]
