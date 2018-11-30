@@ -9,7 +9,7 @@ def _validate(modelOutput, labels):
         if maxindices[i] == labels.squeeze(1)[i]:
             count += 1
 
-    return count
+    return count, maxindices
 
 class ConvBackend(nn.Module):
     def __init__(self, options):

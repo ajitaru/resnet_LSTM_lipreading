@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from data import LipreadingDataset
 from torch.utils.data import DataLoader
 from xinshuo_miscellaneous import print_log
+from xinshuo_io import fileparts
 
 class Validator():
     def __init__(self, options):
@@ -26,19 +27,29 @@ class Validator():
         print_log("Starting validation...", log=self.log_file)
         count = 0
         validator_function = model.validator_function()
-        for i_batch, sample_batched in enumerate(self.validationdataloader):
+        for i_batch, (sample_batched, filename_batch) in enumerate(self.validationdataloader):
             with torch.no_grad():
                 input = Variable(sample_batched['temporalvolume'])
                 labels = sample_batched['label']
                 if(self.usecudnn):
                     input = input.cuda(self.gpuid)
-                    labels = labels.cuda(self.gpuid)
+                    labels = labels.cuda(self.gpuid)        # num_batch x 1
 
-                outputs = model(input)
-                count += validator_function(outputs, labels)
-                print_log('Evaluation, batch %d/%d: %d' % (i_batch+1, self.num_batches, count), log=self.log_file)
+                outputs = model(input)                      # num_batch x 500 for temp-conv         num_batch x 29 x 500               
+                count_tmp, predict_index_list = validator_function(outputs, labels)
+                count += count_tmp
+
+                for batch_index in range(self.batchsize):
+                    filename_tmp = filename_batch[batch_index]
+                    _, filename_tmp, _ = fileparts(filename_tmp)
+                    filename_tmp = filename_tmp.split('_')[0]
+                    prediction_tmp = self.validationdataset.label_list[predict_index_list[batch_index]]
+                    print_log('Evaluation: val set, batch index %d/%d, filename: %s, prediction: %s' % (batch_index+1, self.batchsize, filename_tmp, prediction_tmp), log=self.log_file)
+
+                print_log('Evaluation: val set, batch %d/%d: %d' % (i_batch+1, self.num_batches, count), log=self.log_file)
 
         accuracy = count / len(self.validationdataset)
         accu_savepath = os.path.join(self.savedir, 'accuracy_epoch%03d.txt' % epoch)
+        print_log('saving the accuracy file to %s' % accu_savepath, log=self.log_file)
         with open(accu_savepath, "a") as outputfile:
             outputfile.write("\ncorrect count: {}, total count: {} accuracy: {}".format(count, len(self.validationdataset), accuracy))

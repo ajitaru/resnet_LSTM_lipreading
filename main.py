@@ -21,7 +21,9 @@ print_log('creating the model', log=options["general"]["logfile"])
 model = LipRead(options)
 
 print_log('loading model', log=options["general"]["logfile"])
-if options["general"]["loadpretrainedmodel"]: model.load_state_dict(torch.load(options["general"]["pretrainedmodelpath"]))		#Create the model.
+if options["general"]["loadpretrainedmodel"]: 
+	print_log('loading the pretrained model at %s' % options["general"]["pretrainedmodelpath"], log=options["general"]["logfile"])
+	model.load_state_dict(torch.load(options["general"]["pretrainedmodelpath"]))		#Create the model.
 if options["general"]["usecudnn"]: model = model.cuda(options["general"]["gpuid"])		#Move the model to the GPU.
 
 print_log('loading data', log=options["general"]["logfile"])
@@ -30,9 +32,10 @@ if options["validation"]["validate"]:
 	validator = Validator(options)
 	validator.epoch(model, epoch=0)
 
-for epoch in range(options["training"]["startepoch"], options["training"]["endepoch"]):
-	if options["training"]["train"]: trainer.epoch(model, epoch)
-	if options["validation"]["validate"]: validator.epoch(model, epoch)
+if options["training"]["train"]:
+	for epoch in range(options["training"]["startepoch"], options["training"]["endepoch"]):
+		trainer.epoch(model, epoch)
+		if options["validation"]["validate"]: validator.epoch(model, epoch)
 	# if options["testing"]["test"]:
 	# 	tester = Tester(options)
 	# 	tester.epoch(model)

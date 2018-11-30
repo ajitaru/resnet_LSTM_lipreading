@@ -51,7 +51,7 @@ class Trainer():
         if self.usecudnn: criterion = criterion.cuda(self.gpuid)
         startTime = datetime.now()
         print_log("Starting training...", log=self.log_file)
-        for i_batch, sample_batched in enumerate(self.trainingdataloader):
+        for i_batch, (sample_batched, _) in enumerate(self.trainingdataloader):
             optimizer.zero_grad()
             input = Variable(sample_batched['temporalvolume'])
             labels = Variable(sample_batched['label'])

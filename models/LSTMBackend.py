@@ -22,14 +22,16 @@ class NLLSequenceLoss(nn.Module):
         return loss
 
 def _validate(modelOutput, labels):
-    averageEnergies = torch.sum(modelOutput.data, 1)
+    # modelOutput               # num_batch x 29 x 500
+    # labels                    # num_batch x 1
+    averageEnergies = torch.sum(modelOutput.data, 1)            # num_batch x 500
     maxvalues, maxindices = torch.max(averageEnergies, 1)
     count = 0
     for i in range(0, labels.squeeze(1).size(0)):
         if maxindices[i] == labels.squeeze(1)[i]:
             count += 1
 
-    return count
+    return count, maxindices
 
 class LSTMBackend(nn.Module):
     def __init__(self, options):

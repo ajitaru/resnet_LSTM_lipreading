@@ -36,4 +36,4 @@ class LipreadingDataset(Dataset):
         vidframes = load_video(filename)
         temporalvolume = bbc(vidframes, self.augment)
         sample = {'temporalvolume': temporalvolume, 'label': torch.LongTensor([label])}
-        return sample
+        return sample, filename
